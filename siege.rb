@@ -1,4 +1,3 @@
-require 'open-uri'
 require 'rubygems'
 require 'httparty'
 require 'thread'
@@ -13,7 +12,7 @@ puts "With #{urls.size} URLS"
 results = []
 
 loop do
-  puts "Testing with #{users} users in #{threads_per_user} threads each"
+  # puts "Testing with #{users} users in #{threads_per_user} threads each"
   (0..users - 1).map do |user_num|
     downloaded = 0
     thread = Thread.new(urls.dup) do |user_urls|
@@ -46,7 +45,7 @@ loop do
         end
       end.map(&:join)
       user_end = Time.now
-      puts "\t\tUser #{user_num} completed full page load with #{downloaded} URLs in #{user_end - user_start}s"
+      # puts "\t\tUser #{user_num} completed full page load with #{downloaded} URLs in #{user_end - user_start}s"
       results << user_end - user_start
     end
     thread
