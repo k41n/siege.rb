@@ -17,13 +17,9 @@ loop do
     downloaded = 0
     thread = Thread.new(urls.dup) do |user_urls|
       user_start = Time.now
-      semaphore = Mutex.new
-      (0..threads_per_user - 1).map do
-        Thread.new do
-          url = nil
-          semaphore.synchronize do
-            url = user_urls.shift
-          end
+      user_urls.each_slice((user_urls.size / threads_per_user.to_f).ceil).to_a.map do |group|
+        Thread.new(group) do |user_urls|
+          url = user_urls.shift
           while url
             uri = URI.parse(URI.encode(url))
             begin
@@ -36,11 +32,8 @@ loop do
               puts "Error #{$!} with #{uri}"
               exit(-1)
             end
-            
             downloaded += 1
-            semaphore.synchronize do
-              url = user_urls.shift
-            end
+            url = user_urls.shift
           end
         end
       end.map(&:join)
